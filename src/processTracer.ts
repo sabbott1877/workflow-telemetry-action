@@ -4,7 +4,11 @@ import * as core from '@actions/core'
 import si from 'systeminformation'
 import { sprintf } from 'sprintf-js'
 import { parse } from './procTraceParser'
-import { CompletedCommand, ProcEventParseOptions, WorkflowJobType } from './interfaces'
+import {
+  CompletedCommand,
+  ProcEventParseOptions,
+  WorkflowJobType
+} from './interfaces'
 import * as logger from './logger'
 
 const PROC_TRACER_PID_KEY = 'PROC_TRACER_PID'
@@ -69,7 +73,7 @@ function getExtraProcessInfo(command: CompletedCommand): string | null {
 
 export async function start(): Promise<boolean> {
   logger.info(`Starting process tracer ...`)
-  finished=false
+  finished = false
   try {
     const procTracerBinaryName: string | null =
       await getProcessTracerBinaryName()
@@ -101,7 +105,9 @@ export async function start(): Promise<boolean> {
 
       core.saveState(PROC_TRACER_PID_KEY, child.pid?.toString())
 
-      logger.info(`Started process tracer pid=${child.pid?.toString()} binary=${path.join(__dirname, `../proc-tracer/${procTracerBinaryName}`)} output${procTraceOutFilePath}`)
+      logger.info(
+        `Started process tracer pid=${child.pid?.toString()} binary=${path.join(__dirname, `../proc-tracer/${procTracerBinaryName}`)} output${procTraceOutFilePath}`
+      )
 
       return true
     } else {
@@ -147,19 +153,17 @@ export async function finish(currentJob: WorkflowJobType): Promise<boolean> {
 export async function report(
   currentJob: string,
   options: {
-    procTraceOutFilePath?: string,
-    procTraceMinDurationInput?: string,
-    procTraceSysEnable?: boolean,
-    procTraceChartShow?: boolean,
-    procTraceChartMaxCountInput?: number,
-    procTraceTableShow?: boolean,
+    procTraceOutFilePath?: string
+    procTraceMinDurationInput?: string
+    procTraceSysEnable?: boolean
+    procTraceChartShow?: boolean
+    procTraceChartMaxCountInput?: number
+    procTraceTableShow?: boolean
   }
 ): Promise<string | null> {
-  const procTraceOutFilePath = options.procTraceOutFilePath ?? path.join(
-    __dirname,
-    '../proc-tracer',
-    PROC_TRACER_OUTPUT_FILE_NAME
-  )
+  const procTraceOutFilePath =
+    options.procTraceOutFilePath ??
+    path.join(__dirname, '../proc-tracer', PROC_TRACER_OUTPUT_FILE_NAME)
 
   logger.info(`Reporting process tracer result file=${procTraceOutFilePath}`)
 
@@ -170,32 +174,37 @@ export async function report(
     return null
   }
   try {
-
     logger.info(
       `Getting process tracer result from file ${procTraceOutFilePath} ...`
     )
 
     let procTraceMinDuration = -1
-    const procTraceMinDurationInput: string = options.procTraceMinDurationInput?? core.getInput(
-      'proc_trace_min_duration'
-    )
+    const procTraceMinDurationInput: string =
+      options.procTraceMinDurationInput ??
+      core.getInput('proc_trace_min_duration')
     if (procTraceMinDurationInput) {
       const minProcDurationVal: number = parseInt(procTraceMinDurationInput)
       if (Number.isInteger(minProcDurationVal)) {
         procTraceMinDuration = minProcDurationVal
       }
     }
-    const procTraceSysEnable: boolean = options.procTraceSysEnable ?? core.getInput('proc_trace_sys_enable') === 'true'
+    const procTraceSysEnable: boolean =
+      options.procTraceSysEnable ??
+      core.getInput('proc_trace_sys_enable') === 'true'
 
-    const procTraceChartShow: boolean = options.procTraceChartShow ?? core.getInput('proc_trace_chart_show') === 'true'
-    const procTraceChartMaxCountInput: number = options.procTraceChartMaxCountInput ?? parseInt(
-      core.getInput('proc_trace_chart_max_count')
-    )
+    const procTraceChartShow: boolean =
+      options.procTraceChartShow ??
+      core.getInput('proc_trace_chart_show') === 'true'
+    const procTraceChartMaxCountInput: number =
+      options.procTraceChartMaxCountInput ??
+      parseInt(core.getInput('proc_trace_chart_max_count'))
     const procTraceChartMaxCount = Number.isInteger(procTraceChartMaxCountInput)
       ? procTraceChartMaxCountInput
       : DEFAULT_PROC_TRACE_CHART_MAX_COUNT
 
-    const procTraceTableShow: boolean = options.procTraceTableShow ?? core.getInput('proc_trace_table_show') === 'true'
+    const procTraceTableShow: boolean =
+      options.procTraceTableShow ??
+      core.getInput('proc_trace_table_show') === 'true'
 
     const completedCommands: CompletedCommand[] = await parse(
       procTraceOutFilePath,
@@ -241,7 +250,9 @@ export async function report(
         }
 
         const startTimeMs: number = Math.round(command.startTimeNs / 10e6)
-        const finishTimeMs: number = Math.round((command.startTimeNs + command.durationNs) / 10e6)
+        const finishTimeMs: number = Math.round(
+          (command.startTimeNs + command.durationNs) / 10e6
+        )
         chartContent = chartContent.concat(
           `${startTimeMs}, ${finishTimeMs}`,
           '\n'

@@ -65,7 +65,7 @@ export async function parse(
       const event: CompletedCommand = JSON.parse(line)
 
       // filter out short living processes.
-      if (event.durationNs < minDuration){
+      if (event.durationNs < minDuration) {
         continue
       }
 
