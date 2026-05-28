@@ -2,23 +2,12 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
 
 export default defineConfig([
     globalIgnores(["**/dist/", "**/lib/", "**/node_modules/", "**/jest.config.js"]),
     {
-        extends: compat.extends("plugin:github/recommended"),
+        files: ["src/**/*.ts"],
 
         plugins: {
             "@typescript-eslint": typescriptEslint,
@@ -30,7 +19,7 @@ export default defineConfig([
             },
 
             parser: tsParser,
-            ecmaVersion: 9,
+            ecmaVersion: "latest",
             sourceType: "module",
 
             parserOptions: {
@@ -61,7 +50,7 @@ export default defineConfig([
                 allowExpressions: true,
             }],
 
-            "@typescript-eslint/func-call-spacing": ["error", "never"],
+            "func-call-spacing": ["error", "never"],
             "@typescript-eslint/no-array-constructor": "error",
             "@typescript-eslint/no-explicit-any": "error",
             "@typescript-eslint/no-extraneous-class": "error",
@@ -81,9 +70,7 @@ export default defineConfig([
             "@typescript-eslint/promise-function-async": "error",
             "@typescript-eslint/require-array-sort-compare": "error",
             "@typescript-eslint/restrict-plus-operands": "error",
-            semi: "off",
-            "@typescript-eslint/semi": ["error", "never"],
-            "@typescript-eslint/type-annotation-spacing": "error",
+            semi: ["error", "never"],
             "@typescript-eslint/unbound-method": "error",
         },
     },
